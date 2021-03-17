@@ -100,7 +100,7 @@ struct FeaturedServiceView: View {
                                         Text(service.name)
                                             .font(.system(size: 16.0, weight: .semibold, design: .rounded))
                                             .foregroundColor(Color("Text"))
-                                        Text("Wash and fold laundry service to your door")
+                                        Text("")
                                             .font(.system(size: 14.0, weight: .medium, design: .rounded))
                                             .foregroundColor(Color("Default-Text"))
                                             .padding(.bottom, 7.0)

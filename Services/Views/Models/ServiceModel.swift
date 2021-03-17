@@ -27,13 +27,18 @@ import Alamofire
 
 //Global service object
 class Order: ObservableObject {
-    @Published var selectedItems = [OptionsList.Options]()
+    @Published var selectedItems = [OrderOption.Choice]()
     @Published var total = 0.0
     @Published var qty = 1.00
-
+    @Published var message = ""
+    
+    
+    @Published var isUploaded = false
+    
+    
     //clear cart
     func clear() {
-        selectedItems = [OptionsList.Options]()
+        selectedItems = [OrderOption.Choice]()
         total = 0.0
         qty = 0.0
     }
@@ -47,67 +52,51 @@ class Order: ObservableObject {
         self.total *= qty
     }
 
-    // add to cart
-    func addTo() {
-//        cart.append(contentsOf: [])
-        selectedItems = [OptionsList.Options]()
-    }
-
     func cancel() {
         selectedItems.removeAll()
     }
     
     func uploadOrder() {
-        let parameters: Parameters = ["data": selectedItems.first!, "quantity": qty, "total": total]
+        let item = OrderItem(item: selectedItems, quantity: Int(qty), total: total, instructions: message)
+        var parameters: Parameters = [:]
+
+        do {
+            let jsonData = try JSONEncoder().encode(item)
+            let jsonString = String(data: jsonData, encoding: .utf8)!
+
+            parameters = ["data": jsonString]
+
+        } catch { print(error) }
 
         NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/cart/",
-                                          for: OptionsList.Options.self, using: .post, parameters: parameters) { response in
+                                          for: OrderOption.Choice.self, using: .post, parameters: parameters) { response in
             switch response {
             case .success(let data):
-                do {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
                     print(data)
-                    print(response)
-//                    loaded = true
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.5) {
-//                        isShown = !loaded
-//                        loading = false
-//                        locked = false
-                    }
                 }
+                let isUploaded = true
+                return isUploaded
 
-            case .failure(_):
-//                loading = false
-//                locked = false
-                print("Error")
+            case .failure(let error):
+                let isUploaded = false
+                print("Error - \(error)")
                 print(parameters)
+                return isUploaded
             }
-        }
-        
-        let urlString = "http://192.168.1.75:8000/service/cart/"
-        let json = "{\"What\":\"Ever\"}"
-
-        let url = URL(string: urlString)!
-        let jsonData = json.data(using: .utf8, allowLossyConversion: false)!
-
-        var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethod.post.rawValue
-        request.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-
-        AF.request(request).responseJSON {
-            (response) in
-
-            print(response)
         }
     }
 }
 
 struct OrderItem: Codable {
-    let item: [OptionsList.Options]
+    let item: [OrderOption.Choice]
+    let quantity: Int
+    let total: Double
+    let instructions: String?
 }
 
 struct SelectedItems: Codable {
-    var choices: [OptionsList.Options]
+    var choices: [OrderOption.Choice]
 //    var userMessage: String?
 //    var photos: [UIImage]?
 }
@@ -117,13 +106,14 @@ struct UserCartItems: Codable, Identifiable, Equatable {
     let id: Int
     let locationId: Int
     let service: ServiceData.ServiceItem?
-    let choices: [OptionsList.Options]
-    let optionList: [OptionsList]?
+    let choices: [OrderOption.Choice]
+    let optionList: [OrderOption]?
 }
 
+//MARK:-ServiceItemSection & ServiceItemChoice
 struct ServiceItemData: Codable {
     let serviceItem: ServiceData.ServiceItem
-    let optionList: [OptionsList]
+    let orderOption: [OrderOption]
     let quantity: Int?
     let message: String?
 }
@@ -138,7 +128,7 @@ struct ServiceList: Codable {
     }
 }
 
-//Chick-fil-a
+//MARK:-Service
 struct Service: Codable, Hashable {
     let id: Int
     let name: String
@@ -153,7 +143,8 @@ struct Service: Codable, Hashable {
     }
 }
 
-//ServiceView.swift
+
+//MARK:-ServiceItem
 struct ServiceData: Codable {
     let service: Service
     let serviceItems: [ServiceItem]
@@ -174,22 +165,24 @@ struct ServiceData: Codable {
 }
 
 //Each card section
-struct OptionsList: Codable, Identifiable, Hashable {
+struct OrderOption: Codable, Identifiable, Hashable {
     let id: Int
     let name: String
     let is_required: Bool
-    let options: [Options]
+    let choices: [Choice]
     let min_options: Int
     let max_options: Int
     
     //What is selected from the list of options
-    struct Options: Codable, Identifiable, Hashable{
+    struct Choice: Codable, Identifiable, Hashable{
         let id: Int
-        let name: String
-        let has_options: Bool
-        let amount: Int
+        let answer: String
+        var has_options: Bool
         let price: Double
     }
+    
+//    enum CodingKeys: String, CodingKey {
+//    }
 }
 
 struct Location: Codable, Hashable {
@@ -228,7 +221,7 @@ struct CartItem: Codable, Hashable {
     let item: Int
     let service: ServiceLocation
     let serviceItem: ServiceData.ServiceItem
-    let choice: [OptionsList.Options]
+    let choice: [OrderOption.Choice]
 }
 
 struct ServiceLocation: Codable, Hashable {

@@ -34,10 +34,10 @@ import Alamofire
 import PartialSheet
 
 struct ServiceView: View {
-    
+    @State private var service = [ServiceData]()
+
     //Add ability to change location by ID
     @State private var delivery = false //User selects if they want delivered
-    @State private var service = [ServiceData]()
     @State var showingSubscription = false
     @State var showingSheet = false
     @State var selected = 0 //Manages tabbed view for Reviews, About, Service List etc....
@@ -84,15 +84,16 @@ struct SampleUIScrollView_Previews: PreviewProvider {
 
 extension ServiceView {
     func loadData() {
-        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/\(id)/", for: ServiceData.self, using: .get) { response in
+        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/2/", for: ServiceData.self, using: .get) { response in
             switch response {
             case .success(let data):
                 service = [data]
                 loaded = true
+                return loaded
                 
-                print(service)
             default:
                 print("done xxxxxxx")
+                return false
             }
         }
     }

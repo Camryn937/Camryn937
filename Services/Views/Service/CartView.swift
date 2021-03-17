@@ -31,7 +31,7 @@ struct CartView: View {
     @State var subscription = true
     @State var delivery = true
     @State var isPresented = false
-    @State var cart = [CartItem]()
+    @State var checkout = [Cart]()
     
     var body: some View {
         GeometryReader { geometry in
@@ -72,41 +72,41 @@ struct CartView: View {
                                 
                                 Section(header: Text("Items")
                                 .font(.system(size: 14.0, weight: .medium, design: .rounded))) {
-                                    ForEach(cart, id:\.self) { item in
-                                        Button(action: {
-                                            isPresented = true
-                                            if isPresented {
-                                                order.selectedItems = item.choice
-                                            }
-                                            else {
-                                                order.selectedItems = [OptionsList.Options]()
-                                            }
-                                        } ) {
-                                            VStack(alignment: .leading) {
-                                                HStack {
-                                                    VStack(alignment: .leading) {
-                                                        Text(item.serviceItem.name)
-                                                        .font(.system(size: 18.0, weight: .medium, design: .rounded))
-                                                        HStack {
-                                                            ForEach(item.choice, id:\.self) { choice in
-                                                                Text("\(choice.name)")
-                                                                    .font(.system(size: 14.0, weight: .light, design: .rounded))
-                                                            }
-                                                        }
-                                                    }
-                                                    Spacer()
-                                                    Text("$2.00")
-                                                        .font(.system(size: 16.0, weight: .medium, design: .rounded))
-                                                }
-                                                .padding(.trailing)
-                                                .sheet(isPresented: self.$isPresented, onDismiss: order.cancel) {
-                                                    ServiceItemView(edit: true, optionList: [], itemHeader: item.serviceItem, order: order, isShown: self.$isPresented, locationId: 18)
-                                                }
-                                            }
-                                            .background(Color("Main-Background"))
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                    }
+//                                    ForEach(checkout, id:\.self) { item in
+//                                        Button(action: {
+//                                            isPresented = true
+//                                            if isPresented {
+//                                                order.selectedItems = item.choice
+//                                            }
+//                                            else {
+//                                                order.selectedItems = [OptionsList.Options]()
+//                                            }
+//                                        } ) {
+//                                            VStack(alignment: .leading) {
+//                                                HStack {
+//                                                    VStack(alignment: .leading) {
+//                                                        Text(item.serviceItem.name)
+//                                                        .font(.system(size: 18.0, weight: .medium, design: .rounded))
+//                                                        HStack {
+//                                                            ForEach(item.choice, id:\.self) { choice in
+//                                                                Text("\(choice.name)")
+//                                                                    .font(.system(size: 14.0, weight: .light, design: .rounded))
+//                                                            }
+//                                                        }
+//                                                    }
+//                                                    Spacer()
+//                                                    Text("$2.00")
+//                                                        .font(.system(size: 16.0, weight: .medium, design: .rounded))
+//                                                }
+//                                                .padding(.trailing)
+//                                                .sheet(isPresented: self.$isPresented, onDismiss: order.cancel) {
+//                                                    ServiceItemView(edit: true, optionList: [], itemHeader: item.serviceItem, order: order, isShown: self.$isPresented, locationId: 18)
+//                                                }
+//                                            }
+//                                            .background(Color("Main-Background"))
+//                                        }
+//                                        .buttonStyle(PlainButtonStyle())
+//                                    }
                                 }
                                 
                                 VStack(alignment: .leading) {
@@ -168,10 +168,10 @@ struct CartView: View {
 //        order.cart.remove(atOffsets: offsets)
     }
     func loadData() {
-        let request = AF.request("http://192.168.1.75:8000/service/cart/")
+        let request = AF.request("http://192.168.1.75:8000/service/my/cart/")
         request.responseDecodable(of: Cart.self) { (response) in
             guard let data = response.value else { return }
-            cart = data.cart
+            checkout = [data]
         }
     }
 }

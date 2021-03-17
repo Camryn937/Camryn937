@@ -98,8 +98,11 @@ extension ServiceListView {
             case .success(let data):
                 services = data
                 loaded = true
+                return loaded
+                
             default:
                 print("failure xx")
+                return false
             }
         }
     }
@@ -139,7 +142,7 @@ struct AllServiceListView: View {
                                 Text(service.name)
                                     .font(.system(size: 20.0, weight: .semibold, design: .rounded))
                                     .foregroundColor(Color("Text"))
-                                Text("Wash and fold laundry service to your door")
+                                Text("")
                                     .font(.system(size: 14.0, weight: .medium, design: .rounded))
                                     .foregroundColor(Color("Default-Text"))
                                     .padding(.bottom, 7.0)
@@ -156,12 +159,13 @@ struct AllServiceListView: View {
                         .padding([.leading, .trailing])
                     }
                     .padding(.vertical)
-                    .frame(maxHeight: 250)
+                    .frame(height: 280)
                     .overlay(
                         Rectangle()
                             .foregroundColor(.white)
                             .opacity(0.0)
                     )
+                    Divider()
                 }
                 .buttonStyle(PlainButtonStyle())
                 

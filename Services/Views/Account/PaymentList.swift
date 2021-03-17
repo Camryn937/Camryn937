@@ -69,8 +69,11 @@ struct PaymentList: View {
                 case .success(let data):
                     print("Success")
                     cards = data
+                    return true
+                    
                 default:
                     print("error xx")
+                    return false
                 }
             }
     }

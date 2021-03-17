@@ -222,9 +222,11 @@ extension AccountView {
                 allowSMSNotify = data.profile!.hasTexts
                 allowPushNotify = data.profile!.hasNotifications
                 allowPromoPushNotify = data.profile!.hasPromo
+                return true
                 
             default:
                 print("error xx")
+                return false
             }
         }
     }
@@ -252,8 +254,11 @@ struct AccountVCR<Content: View>: UIViewControllerRepresentable {
             switch data {
             case .success( _):
                 print("Good")
+                return true
+                
             default:
                 print("Done")
+                return false
             }
         }
     }

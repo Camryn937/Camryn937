@@ -32,7 +32,7 @@ struct ChoiceSection: View {
     
     //order object gets passed to notify view to display as checked
     @ObservedObject var order: Order
-    let choices: [OptionsList.Options]
+    let choices: [OrderOption.Choice]
     
     //passes the checked item id back to parent
     let callback: (Int)->()
@@ -45,6 +45,7 @@ struct ChoiceSection: View {
                 } ) {
                     Group {
                         CheckboxLabel(order: order, choice: choice)
+                            .padding(.horizontal, 5.0)
                     }
                 }
                 if choice != choices.last {
@@ -58,7 +59,7 @@ struct ChoiceSection: View {
 
 struct CheckboxLabel: View {
     @ObservedObject var order: Order
-    let choice: OptionsList.Options
+    let choice: OrderOption.Choice
     
     var body: some View {
         HStack {
@@ -72,7 +73,7 @@ struct CheckboxLabel: View {
             
             
             //choice label
-            Text("\(choice.name)")
+            Text("\(choice.answer)")
                 .foregroundColor(order.selectedItems.contains(choice) ? .blue : Color("Text"))
                 .multilineTextAlignment(.leading)
                 .frame(minWidth: 0, maxWidth: .infinity, minHeight: 35, maxHeight: 35, alignment: .leading)
@@ -100,7 +101,7 @@ struct ItemViewCardWrapperView: View {
 
     
     var body: some View {
-        ChoiceSection(order: order, choices: [Services.OptionsList.Options(id: 1, name: "Yes", has_options: false, amount: Int(8.00), price: 8.00)], callback: tester)
+        ChoiceSection(order: order, choices: [Services.OrderOption.Choice(id: 1, answer: "Yes", has_options: false, price: 8.00)], callback: tester)
     }
     func tester(_: Int) {
         print("hello")

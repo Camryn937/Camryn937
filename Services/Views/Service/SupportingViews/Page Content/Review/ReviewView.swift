@@ -178,8 +178,11 @@ extension ReviewView {
                 reviews = data
                 loaded = true
                 print(data)
+                return loaded
+                
             default:
                 print("failure xx")
+                return false
             }
         }
     }

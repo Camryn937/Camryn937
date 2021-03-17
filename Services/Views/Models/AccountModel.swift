@@ -112,6 +112,8 @@ struct Auth: Codable {
 //    return dict
 //}
 
+
+//Take an object and preps to be sent as JSON
 func convert(list: [Any]) -> [[String:Any]] {
     var dict = [String:Any]()
     var data = [[String:Any]]()

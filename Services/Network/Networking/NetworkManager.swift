@@ -85,72 +85,101 @@ final class NetworkController: ObservableObject {
         return Session(configuration: configuration, interceptor: interceptor, cachedResponseHandler: responseCacher, eventMonitors: [networkLogger])
     }()
     
-    func loadData<T>(from: String, for: T.Type, using: HTTPMethod, parameters: Parameters = ["data":""], encoding: ParameterEncoding! = URLEncoding.default, completion: @escaping (Result<T, Error>) -> Void) where T: Codable {
+    func loadData<T>(from: String, for: T.Type, using: HTTPMethod, parameters: Parameters = ["data":""], encoding: ParameterEncoding! = URLEncoding.default, completion: @escaping (Result<T, Error>) -> Bool) where T: Codable {
         
         CacheController.shared.clearCache()
         
-        //MARK: MakeAPI Request
-        let apiRequest = sessionManager.request(from, method: using, parameters: parameters, encoding: encoding)
+        //Decode GET Requests
+        if using.rawValue == "GET" {
+            
+            //MARK: GET API Request
+            let apiRequest = sessionManager.request(from, method: using, parameters: parameters, encoding: encoding)
+
             apiRequest
-            .resume()
-            .validate(contentType: ["application/json"])
-            .responseDecodable(of: ApiModel<T>.self, completionHandler: { response in
-                
-                switch response.result {
-                case .success(let data):
-                    if let status = response.response?.statusCode {
-                        switch status {
-                        case 200..<300:
-                            print("stat-\(status)")
-                            completion(.success(data.data))
-                        case 401:
-                            print("failed>>>>>>>>>>>>>>>>>XX")
-                        case 500:
-                            print(status)
-                        default:
-                            print(status)
+                .resume()
+                .validate(contentType: ["application/json"])
+                .responseDecodable(of: ApiModel<T>.self, completionHandler: { response in
+                    switch response.result {
+                    case .success(let data):
+                        if let status = response.response?.statusCode {
+                            switch status {
+                            case 200..<300:
+                                print("stat-\(status)")
+                                completion(.success(data.data))
+                            case 401:
+                                print("failed>>>>>>>>>>>>>>>>>XX")
+                            case 500:
+                                print(status)
+                            default:
+                                print(status)
+                            }
                         }
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
                     }
-                case .failure(let error):
-                    print("???")
-                    completion(.failure(error))
-                }f
-            })
-                .responseJSON(completionHandler: { response in
-                    print(response)
-                } )
-    }
+                })
+        }
         
+        //Encode POST requests
+        else {
+            
+            //MARK: POST API Request
+            let apiRequest = sessionManager.request(from, method: using, parameters: parameters, encoding: JSONEncoding.default)
+            
+            apiRequest
+                .resume()
+                .validate(contentType: ["application/json"])
+                .responseJSON { response in
+                    print(response)
+                }
+        }
+    }
+    
     func authenticate() {
         let requestAuth = sessionManager.request("http://localhost:8000/api/token/", method: .post, parameters: auth, encoding: encoding)
-            
-            requestAuth
+        
+        requestAuth
             .resume()
             .validate(contentType: ["application/json"])
-                .authenticate(username: "camryn", password: "0010110")
-                .responseDecodable(of: AuthTokens.self, completionHandler: { req in
-                })
+            .authenticate(username: "camryn", password: "0010110")
+            .responseDecodable(of: AuthTokens.self, completionHandler: { req in
+            })
+    }
+}
+
+
+struct User1:Codable
+{
+    var firstName: String
+    var lastName: String
+    var country: String
+    
+    enum CodingKeys: String, CodingKey {
+        case firstName = "first_name"
+        case lastName = "last_name"
+        case country
     }
 }
 
 //MARK: - INTERCEPTOR
 class DataRequestInterceptor: RequestInterceptor {
-  let retryLimit = 5
-  let retryDelay: TimeInterval = 10
-
+    let retryLimit = 5
+    let retryDelay: TimeInterval = 10
+    
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         let urlRequest = urlRequest
         print("intercept")
-//    if let token = TokenManager.shared.fetchAccessToken() {
-//      urlRequest.setValue("token \(token)", forHTTPHeaderField: "Authorization")
-//    }
-    completion(.success(urlRequest)) }
+        //    if let token = TokenManager.shared.fetchAccessToken() {
+        //      urlRequest.setValue("token \(token)", forHTTPHeaderField: "Authorization")
+        //    }
+        completion(.success(urlRequest)) }
     
-  func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
-    let response = request.task?.response as? HTTPURLResponse
-    if let statusCode = response?.statusCode, (500...599).contains(statusCode), request.retryCount < retryLimit { completion(.retryWithDelay(retryDelay)) }
-    else { return completion(.doNotRetry) }
-  }
+    func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
+        let response = request.task?.response as? HTTPURLResponse
+        if let statusCode = response?.statusCode, (500...599).contains(statusCode), request.retryCount < retryLimit { completion(.retryWithDelay(retryDelay)) }
+        else { return completion(.doNotRetry) }
+    }
 }
 
 class RequestRouter {
@@ -159,7 +188,7 @@ class RequestRouter {
     var urlParameters = [String]()
     var path = ""
     var headers : HTTPHeaders  = ["Content-Type":"application/json"]
-
+    
     static let shared = RequestRouter()
     
     //Converts URL to an array
@@ -202,5 +231,5 @@ class RequestRouter {
         case acceptType = "Accept"
         case acceptEncoding = "Accept-Encoding"
     }
-
+    
 }

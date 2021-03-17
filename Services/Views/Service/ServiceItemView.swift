@@ -28,7 +28,7 @@ import Alamofire
 
 struct ServiceItemView: View {
     let edit: Bool
-    let optionList: [OptionsList]?
+    let optionList: [OrderOption]?
     let itemHeader: ServiceData.ServiceItem
     
     @State var serviceItem: ServiceItemData?
@@ -59,8 +59,8 @@ struct ServiceItemView: View {
                     
                     //loops through the option list field to generate the card header & choices
                     //Uses required count to make sure all required items completed
-                    ForEach(serviceItem!.optionList, id:\.self) { option in
-                        ServiceItemCard(incompletedID: $incompleteID, requiredCount: $requiredCount, order: order, serviceItem: option.options, callback: canProceed, option: option, locked: $locked)
+                    ForEach(serviceItem!.orderOption, id:\.self) { option in
+                        ServiceItemCard(incompletedID: $incompleteID, requiredCount: $requiredCount, order: order, serviceItem: option.choices, callback: canProceed, option: option, locked: $locked)
                             .scrollId(incompleteID)
                         Seperator()
                     }
@@ -127,7 +127,7 @@ struct ServiceItemView: View {
                     
                     if requiredCount == 0 && !loading {
                         locked = true
-                        loading.toggle()
+                        loading = true
                         order.uploadOrder()
                     }
                 }) {
@@ -165,7 +165,7 @@ struct ServiceItemWrapperView: View {
     let some = true
     
     var body: some View {
-        ServiceItemView(edit: true, optionList: [Services.OptionsList(id: 1, name: "Include Laundry Bag", is_required: false, options: [Services.OptionsList.Options(id: 1, name: "Yes", has_options: false, amount: 3, price: 5.00)], min_options: 0, max_options: 1), Services.OptionsList(id: 2, name: "What Detergent Should We Use", is_required: true, options: [Services.OptionsList.Options(id: 2, name: "Tide", has_options: false, amount: 2, price: 2.50), Services.OptionsList.Options(id: 3, name: "Gain", has_options: false, amount: Int(5.00), price: 3.50)], min_options: 1, max_options: 1), Services.OptionsList(id: 3, name: "Please Select A Fabric Softener", is_required: true, options: [Services.OptionsList.Options(id: 4, name: "Snuggle", has_options: false, amount: Int(5.50), price: 4.00), Services.OptionsList.Options(id: 5, name: "Angel Soft", has_options: false, amount: 5, price: 10.00)], min_options: 1, max_options: 2)], itemHeader: Services.ServiceData.ServiceItem(id: 1, name: "Laundry", imageURL: "https://a0.muscache.com/im/pictures/75e5eca4-17b1-4264-80e3-574740b08f51.jpg?im_w=1200", description: "We are a full-service cleaners, offering professional dry cleaning services, shirt laundering, repairs, alterations, family and campus laundry bundles. Just contact one of our two locations today and we’ll handle all of your dry cleaning and laundry needs in a professional and timely manner."), order: order, isShown: $isShown, locationId: 4)
+        ServiceItemView(edit: true, optionList: [Services.OrderOption(id: 1, name: "Include Laundry Bag", is_required: false, choices: [Services.OrderOption.Choice(id: 1, answer: "Yes", has_options: false, price: 5.00)], min_options: 0, max_options: 1), Services.OrderOption(id: 2, name: "What Detergent Should We Use", is_required: true, choices: [Services.OrderOption.Choice(id: 2, answer: "Tide", has_options: false, price: 2.50), Services.OrderOption.Choice(id: 3, answer: "Gain", has_options: false, price: 3.50)], min_options: 1, max_options: 1), Services.OrderOption(id: 3, name: "Please Select A Fabric Softener", is_required: true, choices: [Services.OrderOption.Choice(id: 4, answer: "Snuggle", has_options: false, price: 4.00), Services.OrderOption.Choice(id: 5, answer: "Angel Soft", has_options: false, price: 10.00)], min_options: 1, max_options: 2)], itemHeader: Services.ServiceData.ServiceItem(id: 1, name: "Laundry", imageURL: "https://a0.muscache.com/im/pictures/75e5eca4-17b1-4264-80e3-574740b08f51.jpg?im_w=1200", description: "We are a full-service cleaners, offering professional dry cleaning services, shirt laundering, repairs, alterations, family and campus laundry bundles. Just contact one of our two locations today and we’ll handle all of your dry cleaning and laundry needs in a professional and timely manner."), order: order, isShown: $isShown, locationId: 4)
     }
 }
 
@@ -187,18 +187,21 @@ extension ServiceItemView {
                 serviceItem = data
                 requiredCount = 0
                 
-                for item in data.optionList {
+                for item in data.orderOption {
                     if item.min_options > 0 {
                         self.requiredCount += 1
                     }
                 }
                 
                 loaded = true
+                return loaded
                 
             default:
                 print("done xxxxxxx \(response)")
+                return false
             }
         }
+        
     }
     
     

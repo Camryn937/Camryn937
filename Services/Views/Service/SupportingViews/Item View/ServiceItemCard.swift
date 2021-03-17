@@ -29,12 +29,12 @@ struct ServiceItemCard: View {
     @Binding var incompletedID: Int //Return to parent to scroll
     @Binding var requiredCount: Int //Number of ItemCard elements that requires at least 1 item
     @ObservedObject var order: Order //Add order items to cart from child view
-    let serviceItem: [OptionsList.Options] //Iterate over options in child=
+    let serviceItem: [OrderOption.Choice] //Iterate over options in child=
     let callback: ()->() //function to call from the parent view
     @State var completed = false //Checks card status Required done or not
     @State var optionsChecked = 0
-    @State var lastChecked = [OptionsList.Options]()
-    let option: OptionsList
+    @State var lastChecked = [OrderOption.Choice]()
+    let option: OrderOption
     @Binding var locked: Bool
     
     var body: some View {
@@ -85,12 +85,12 @@ struct ServiceItemCardWrapper: View {
     @State var requiredCount = 2
     @State var incompleteID = 2
     @State var locked = false
-    var data = [Services.OptionsList(id: 1, name: "Include Laundry Bag", is_required: false, options: [Services.OptionsList.Options(id: 1, name: "Yes", has_options: false, amount: Int(5.00), price: 5.00)], min_options: 0, max_options: 1), Services.OptionsList(id: 2, name: "What Detergent Should We Use", is_required: true, options: [Services.OptionsList.Options(id: 2, name: "Tide", has_options: false, amount: Int(2.00), price: 6.00), Services.OptionsList.Options(id: 3, name: "Gain", has_options: false, amount: Int(5.00), price: 2.50)], min_options: 1, max_options: 1), Services.OptionsList(id: 3, name: "Please Select A Fabric Softener", is_required: true, options: [Services.OptionsList.Options(id: 4, name: "Snuggle", has_options: false, amount: Int(3.00), price: 4.00), Services.OptionsList.Options(id: 5, name: "Angel Soft", has_options: false, amount: Int(4.00), price: 3.50)], min_options: 1, max_options: 2)]
+    var data = [Services.OrderOption(id: 1, name: "Include Laundry Bag", is_required: false, choices: [Services.OrderOption.Choice(id: 1, answer: "Yes", has_options: false, price: 5.00)], min_options: 0, max_options: 1), OrderOption(id: 2, name: "What Detergent Should We Use", is_required: true, choices: [Services.OrderOption.Choice(id: 2, answer: "Tide", has_options: false, price: 6.00), Services.OrderOption.Choice(id: 3, answer: "Gain", has_options: false, price: 2.50)], min_options: 1, max_options: 1), Services.OrderOption(id: 3, name: "Please Select A Fabric Softener", is_required: true, choices: [Services.OrderOption.Choice(id: 4, answer: "Snuggle", has_options: false, price: 4.00), Services.OrderOption.Choice(id: 5, answer: "Angel Soft", has_options: false, price: 3.50)], min_options: 1, max_options: 2)]
     var some = "Cam"
     var body: some View {
         VStack {
             ForEach(data, id:\.self) { option in
-                ServiceItemCard(incompletedID: $incompleteID, requiredCount: $requiredCount, order: Order(), serviceItem: option.options, callback: tester, option: option, locked: $locked)
+                ServiceItemCard(incompletedID: $incompleteID, requiredCount: $requiredCount, order: Order(), serviceItem: option.choices, callback: tester, option: option, locked: $locked)
                 Seperator()
             }
         }
@@ -112,7 +112,7 @@ struct ServiceItemCard_Previews: PreviewProvider {
 extension ServiceItemCard {
     func evaluate(selectedOption: Int) {
         //Choice searches list of choices by id and is assigned that value
-        //e.x. Services.OptionsList.Options(id: 3, name: "Gain", has_options: false)
+        //e.x. Services.OrderOption.Choice(id: 3, name: "Gain", has_options: false)
         let choice = serviceItem.first(where: { $0.id == selectedOption} )
         
         if optionsChecked < option.min_options { incompletedID = option.id }
@@ -163,7 +163,7 @@ extension ServiceItemCard {
         process()
     }
     
-    func check(choice: OptionsList.Options, isReload: Bool) {
+    func check(choice: OrderOption.Choice, isReload: Bool) {
         if !order.selectedItems.contains(choice) {
             order.selectedItems.append(choice)
             print("checked")
@@ -172,7 +172,7 @@ extension ServiceItemCard {
             order.update()
         }
     }
-    func uncheck(choice: OptionsList.Options) {
+    func uncheck(choice: OrderOption.Choice) {
         if let index = order.selectedItems.firstIndex(of: choice) {
             order.selectedItems.remove(at: index)
             optionsChecked -= 1

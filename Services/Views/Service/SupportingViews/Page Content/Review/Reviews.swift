@@ -80,8 +80,11 @@ extension AllReviews {
             case .success(let data):
                 reviews = data
                 loaded = true
+                return loaded
+                
             default:
                 print("failure xx")
+                return false
             }
         }
     }
