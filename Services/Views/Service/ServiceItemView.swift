@@ -28,7 +28,6 @@ import Alamofire
 
 struct ServiceItemView: View {
     let edit: Bool
-    let optionList: [OrderOption]?
     let itemHeader: ServiceData.ServiceItem
     
     @State var serviceItem: ServiceItemData?
@@ -111,7 +110,11 @@ struct ServiceItemView: View {
                         AnimationCircleStrokeSpin(size: 30)
                     }
                     .frame(height: 200)
-                    .onAppear(perform: { loadData() })
+                    .onAppear(perform: {
+						loadData()
+						order.selectedService = [itemHeader]
+						order.update()
+					})
                 }
                 
             }
@@ -128,14 +131,24 @@ struct ServiceItemView: View {
                     if requiredCount == 0 && !loading {
                         locked = true
                         loading = true
-                        order.uploadOrder()
+                        order.uploadOrder(asUpdate: edit)
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.2) {
+                            if order.isUploaded {
+                                locked = false
+                                loading = false
+                                isShown = false
+                            }
+                            else {
+                                locked = false
+                                loading = false
+                            }
+                        }
                     }
                 }) {
                     //Order Button
-                    Group{
                         HStack {
                             Spacer()
-                            if loading { AnimationCircleStrokeSpin(size: 20) }
+                            if loading { AnimationCircleStrokeSpin(size: 25) }
                             
                             else {
                                 Text(!edit ? "Continue $\((order.total), specifier: "%.2f")" :
@@ -149,9 +162,7 @@ struct ServiceItemView: View {
                         .foregroundColor(Color("Text"))
                         .padding(.all, 16.0)
                         .background( requiredCount == 0 ? Color.blue : Color.gray.opacity(0.5) )
-                        .shadow(color: Color("Shadow").opacity(0.3),radius: 3, x: 3, y: 3)
                         .buttonStyle(PlainButtonStyle())
-                    }
                 }
             }
         }
@@ -165,7 +176,7 @@ struct ServiceItemWrapperView: View {
     let some = true
     
     var body: some View {
-        ServiceItemView(edit: true, optionList: [Services.OrderOption(id: 1, name: "Include Laundry Bag", is_required: false, choices: [Services.OrderOption.Choice(id: 1, answer: "Yes", has_options: false, price: 5.00)], min_options: 0, max_options: 1), Services.OrderOption(id: 2, name: "What Detergent Should We Use", is_required: true, choices: [Services.OrderOption.Choice(id: 2, answer: "Tide", has_options: false, price: 2.50), Services.OrderOption.Choice(id: 3, answer: "Gain", has_options: false, price: 3.50)], min_options: 1, max_options: 1), Services.OrderOption(id: 3, name: "Please Select A Fabric Softener", is_required: true, choices: [Services.OrderOption.Choice(id: 4, answer: "Snuggle", has_options: false, price: 4.00), Services.OrderOption.Choice(id: 5, answer: "Angel Soft", has_options: false, price: 10.00)], min_options: 1, max_options: 2)], itemHeader: Services.ServiceData.ServiceItem(id: 1, name: "Laundry", imageURL: "https://a0.muscache.com/im/pictures/75e5eca4-17b1-4264-80e3-574740b08f51.jpg?im_w=1200", description: "We are a full-service cleaners, offering professional dry cleaning services, shirt laundering, repairs, alterations, family and campus laundry bundles. Just contact one of our two locations today and we’ll handle all of your dry cleaning and laundry needs in a professional and timely manner."), order: order, isShown: $isShown, locationId: 4)
+		ServiceItemView(edit: true, itemHeader: Services.ServiceData.ServiceItem(id: 1, name: "Laundry", imageURL: "https://a0.muscache.com/im/pictures/75e5eca4-17b1-4264-80e3-574740b08f51.jpg?im_w=1200", description: "We are a full-service cleaners, offering professional dry cleaning services, shirt laundering, repairs, alterations, family and campus laundry bundles. Just contact one of our two locations today and we’ll handle all of your dry cleaning and laundry needs in a professional and timely manner.", price: 0.0), order: order, isShown: $isShown, locationId: 4)
     }
 }
 
@@ -180,7 +191,7 @@ struct ServiceItemWrapperView_Previews: PreviewProvider {
 
 extension ServiceItemView {
     func loadData() {
-        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/18/1/",
+        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/\(itemHeader.id)/1/",
                                           for: ServiceItemData.self, using: .get) { response in
             switch response {
             case .success(let data):
@@ -194,11 +205,9 @@ extension ServiceItemView {
                 }
                 
                 loaded = true
-                return loaded
                 
             default:
                 print("done xxxxxxx \(response)")
-                return false
             }
         }
         

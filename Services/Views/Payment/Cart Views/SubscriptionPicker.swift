@@ -34,25 +34,25 @@ struct SubscriptionPicker: View {
             Text("Select Subscription items")
                 .font(.headline)
                 .fontWeight(.bold)
-            ForEach(cart, id: \.self) { item in
-                Button(action: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/{}/*@END_MENU_TOKEN@*/) {
-                    Text(item.serviceItem.name)
-                        .padding(.vertical)
-                        .frame(width: 300)
-                        .background(Color.white)
-                        .cornerRadius(8)
-                }
-                .padding(.horizontal)
-                .zIndex(10)
-                .shadow(color: Color.black.opacity(0.3),radius: 5, x: 3, y: 3)
-            }
+//            ForEach(cart, id: \.self) { item in
+//                Button(action: /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Action@*/{}/*@END_MENU_TOKEN@*/) {
+//                    Text(item.serviceItem.name)
+//                        .padding(.vertical)
+//                        .frame(width: 300)
+//                        .background(Color.white)
+//                        .cornerRadius(8)
+//                }
+//                .padding(.horizontal)
+//                .zIndex(10)
+//                .shadow(color: Color.black.opacity(0.3),radius: 5, x: 3, y: 3)
+//            }
         }.onAppear(perform: loadData)
     }
     func loadData() {
         let request = AF.request("http://172.16.0.3:8000/service/cart/")
         request.responseDecodable(of: Cart.self) { (response) in
             guard let data = response.value else { return }
-            cart = data.cart
+			cart = data.items_in_cart
         }
     }
 }

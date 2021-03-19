@@ -28,33 +28,39 @@ import PartialSheet
 
 struct ContentView: View {
     var body: some View {
-        TabView {
-            ServiceListView()
-                .tabItem {
-                    Image(systemName: "star")
-                    Text("One")
+        ZStack(alignment: .bottom) {
+            MainContent()
+            Button(action: {
+                
+            }) {
+                VStack {
+                    HStack {
+                        Text("Cart $25.00")
+                            .foregroundColor(Color.white)
+                            .font(.system(size: 18.0, weight: .semibold, design: .rounded))
+                            .frame(height: 60, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                            .frame(minWidth: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/, maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                            .background(Color.blue)
+                            .cornerRadius(8)
+                    }
+                    .padding(.horizontal)
                 }
+            }
 
-            SearchView()
-                .tabItem {
-                    Image(systemName: "star.fill")
-                    Text("Two")
-                }
-            
-            OrderView()
-                .tabItem {
-                    Image(systemName: "star")
-                    Text("One")
-                }
-
-            AccountView()
-                .addPartialSheet()
-                .tabItem {
-                    Image(systemName: "star.fill")
-                    Text("Two")
-                }
+//                .onAppear(perform: {
+//                    loadData()
+//                })
         }
     }
+//    func loadData() {
+//        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/", for: [Service].self, using: .get) { data in
+//            switch data {
+//            case .success(let data):
+//            default:
+//                print("failure xx")
+//            }
+//        }
+//    }
 }
 
 struct ContentView_Previews: PreviewProvider {
@@ -64,22 +70,7 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-struct ContentVCR<Content: View>: UIViewControllerRepresentable {
-    var content: () -> Content
 
-    init(@ViewBuilder content: @escaping () -> Content) {
-        self.content = content
-    }
-    
-    func makeUIViewController(context: Context) -> some UIViewController {
-        let vc = ContentViewController()
-        return vc
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        
-    }
-}
 //
 //let fontFamilyNames = UIFont.familyNames
 //

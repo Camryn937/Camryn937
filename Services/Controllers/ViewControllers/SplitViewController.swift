@@ -34,7 +34,7 @@ import SwiftUI
 import Foundation
 import UIKit
 
-let topViewHeight: CGFloat = 400
+var topViewHeight = CGFloat(400)
 var containerHeight: CGFloat = 0
 
 //MARK:- SplitViewController
@@ -48,11 +48,8 @@ class SplitViewController: UIViewController, BottomViewControllerScrollDelegate 
         super.viewDidLoad()
 
         bottomVC.delegate = self
-        addViewController(bottomVC, frame: view.bounds, completion: nil)
-        addViewController(topVC, frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: topViewHeight), completion: nil)
-        
-        topVC.view.frame.origin.y = 0
-        
+        addViewController(bottomVC, frame: CGRect(x: 0, y: 0, width: view.frame.height, height: view.frame.height - view.safeAreaInsets.top), completion: nil)
+        addViewController(topVC, frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: topViewHeight + view.safeAreaInsets.top), completion: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -60,11 +57,23 @@ class SplitViewController: UIViewController, BottomViewControllerScrollDelegate 
 
     func bottomViewScrollViewDidScroll(_ scrollView: UIScrollView) {
         let offset = (scrollView.contentOffset.y + topViewHeight)
-        print(offset)
-        if offset >= 0 {
-            topVC.view.frame.origin.y = -(scrollView.contentOffset.y + topViewHeight)
+        let selectorHeight: CGFloat = 50
+        
+        topVC.view.frame.origin.y = -(offset + view.safeAreaInsets.top)
+        topVC.view.frame.size.height = topViewHeight
+        
+//        print(topVC.view.frame.origin.y)
+//        if offset < 0 {
+//            topVC.view.frame.origin.y = 0
+//            topVC.view.frame.size.height = topViewHeight
+//        }
+        
+        if offset > topViewHeight - selectorHeight {
+            topVC.view.frame.origin.y = -(topViewHeight - selectorHeight)
+            topVC.view.frame.size.height = topViewHeight
         }
     }
+    
 }
 
 class TopViewController: UIViewController {
@@ -73,7 +82,9 @@ class TopViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
-        addViewController(hc, frame: view.bounds, completion: nil)
+        view.clipsToBounds = true
+        view.addSubview(hc.view)
+        pinEdges(of: hc.view, to: view)
     }
 }
 
@@ -91,7 +102,7 @@ class BottomViewController: UIViewController, UIPageViewControllerDelegate, UIPa
         vc.delegate = self
         vc.dataSource = self
         vc.view.backgroundColor = .clear
-        vc.view.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height-40)
+        vc.view.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
         return vc
     }()
     
@@ -113,6 +124,7 @@ class BottomViewController: UIViewController, UIPageViewControllerDelegate, UIPa
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.clipsToBounds = false
         view.backgroundColor = .clear
         
         serviceVC.delegate = delegate
@@ -126,7 +138,9 @@ class BottomViewController: UIViewController, UIPageViewControllerDelegate, UIPa
         Controllers = [serviceVC, reviewVC, photoVC, aboutVC]
 
         content.setViewControllers([serviceVC], direction: .forward, animated: true, completion: nil)
-        addViewController(content, frame: view.bounds, completion: nil)
+        
+        addViewController(content, frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height), completion: nil)
+        
     }
     
     

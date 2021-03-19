@@ -81,11 +81,9 @@ struct AddressView: View {
                             case .success(let data):
                                 print("Success")
                                 addresses = data.address ?? []
-                                return true
                                 
                             default:
                                 print("error xx")
-                                return false
                             }
                         }
                     }

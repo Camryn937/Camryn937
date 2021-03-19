@@ -92,14 +92,13 @@ struct ReviewView: View {
         else {
             VStack {
                 Text("Loading...")
-                    .frame(height:UIScreen.main.bounds.height, alignment: .top)
+                    .padding(.top, 100.0)
                     .overlay(
-                        VStack {
                             AnimationCircleStrokeSpin(size: 30)
-                                .onAppear(perform: loadData)
-                        })
+                                .padding(.all)
+                                .onAppear(perform: loadData))
             }
-            .frame(width: UIScreen.main.bounds.width, height:UIScreen.main.bounds.height/4, alignment: .center)
+            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height, alignment: .top)
         }
     }
 }
@@ -178,11 +177,9 @@ extension ReviewView {
                 reviews = data
                 loaded = true
                 print(data)
-                return loaded
                 
             default:
                 print("failure xx")
-                return false
             }
         }
     }

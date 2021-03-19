@@ -55,23 +55,6 @@ struct ServiceItemHeader: View {
     }
 }
 
-struct Seperator: View {
-    var body: some View {
-        Rectangle()
-            .fill(Color("Accent-Color"))
-            .frame(height: 8, alignment: .top)
-            .overlay(
-                Rectangle().stroke(Color("Shadow"), lineWidth: 2))
-    }
-}
-
-struct  SeperatorWrapper_Previews: PreviewProvider {
-    static var previews: some View {
-        ZStack{
-            Seperator()
-        }
-    }
-}
 
 //Default image before image is loaded with matching background color to keep aspect 1:1
 struct defaultImage: View {
@@ -132,7 +115,7 @@ struct StaticContent<Content: View>: View {
 
 #if DEBUG
 struct ServiceItemHeaderWrapper: View {
-    var service = ServiceItemData(serviceItem: Services.ServiceData.ServiceItem(id: 1, name: "Laundry", imageURL: Optional("https://a0.muscache.com/im/pictures/75e5eca4-17b1-4264-80e3-574740b08f51.jpg?im_w=1200"), description: "We are a full-service cleaners, offering professional dry cleaning services, shirt laundering, repairs, alterations, family and campus laundry bundles. Just contact one of our two locations today and we’ll handle all of your dry cleaning and laundry needs in a professional and timely manner."), orderOption: [Services.OrderOption(id: 1, name: "Include Laundry Bag", is_required: false, choices: [Services.OrderOption.Choice(id: 1, answer: "Yes", has_options: false, price: 4.50)], min_options: 0, max_options: 1), Services.OrderOption(id: 2, name: "What Detergent Should We Use", is_required: true, choices: [Services.OrderOption.Choice(id: 2, answer: "Tide", has_options: false, price: 4.50), Services.OrderOption.Choice(id: 3, answer: "Gain", has_options: false, price: 2.00)], min_options: 1, max_options: 1), Services.OrderOption(id: 3, name: "Please Select A Fabric Softener", is_required: true, choices: [Services.OrderOption.Choice(id: 4, answer: "Snuggle", has_options: false, price: 7.00), Services.OrderOption.Choice(id: 5, answer: "Angel Soft", has_options: false, price: 6.00)], min_options: 1, max_options: 2)], quantity: 1, message:"")
+	var service = ServiceItemData(serviceItem: Services.ServiceData.ServiceItem(id: 1, name: "Laundry", imageURL: Optional("https://a0.muscache.com/im/pictures/75e5eca4-17b1-4264-80e3-574740b08f51.jpg?im_w=1200"), description: "We are a full-service cleaners, offering professional dry cleaning services, shirt laundering, repairs, alterations, family and campus laundry bundles. Just contact one of our two locations today and we’ll handle all of your dry cleaning and laundry needs in a professional and timely manner.", price: 0.0), orderOption: [Services.OrderOption(id: 1, name: "Include Laundry Bag", is_required: false, choices: [Services.OrderOption.Choice(id: 1, answer: "Yes", has_options: false, price: 4.50)], min_options: 0, max_options: 1), Services.OrderOption(id: 2, name: "What Detergent Should We Use", is_required: true, choices: [Services.OrderOption.Choice(id: 2, answer: "Tide", has_options: false, price: 4.50), Services.OrderOption.Choice(id: 3, answer: "Gain", has_options: false, price: 2.00)], min_options: 1, max_options: 1), Services.OrderOption(id: 3, name: "Please Select A Fabric Softener", is_required: true, choices: [Services.OrderOption.Choice(id: 4, answer: "Snuggle", has_options: false, price: 7.00), Services.OrderOption.Choice(id: 5, answer: "Angel Soft", has_options: false, price: 6.00)], min_options: 1, max_options: 2)])
     
     @Environment(\.imageCache) var cache: ImageCache
     

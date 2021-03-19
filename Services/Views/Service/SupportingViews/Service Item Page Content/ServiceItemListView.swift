@@ -45,7 +45,6 @@ struct ServiceItemListView: View {
                     VStack(spacing: 0.0) {
                         Button(action: {
                             showingDetail.toggle()
-//                            order.cart.append($serviceItem)
                         })
                         {
                             HStack(alignment: .top) {
@@ -53,23 +52,24 @@ struct ServiceItemListView: View {
                                     Text(serviceItem.name)
                                         .font(.system(size: 18))
                                         .fontWeight(.semibold)
-                                    Text("$25.00")
-                                        .font(.system(size: 14))
+									Spacer()
+									Text("$\((serviceItem.price), specifier: "%.2f")")
+                                        .font(.system(size: 16))
                                         .fontWeight(.medium)
                                         .padding(.top, 1.0)
                                 }
-                                .padding([.top, .leading])
+								.padding(.all)
                                 
                                 Spacer()
                                 
                                 AsyncImage(url: URL(string: serviceItem.imageURL!)!, cache: self.cache, placeholder: Text("Loading ..."), configuration: { $0.resizable() }, mode: 2)
                                     .scaledToFit()
-                                    .aspectRatio(2, contentMode: .fit)
-                                    .frame(width: 120, height: 120)
+                                    .aspectRatio(2, contentMode: .fill)
+                                    .frame(width: 140, height: 120)
                             }
                             .frame(height: 120.0)
                             .sheet(isPresented: $showingDetail, onDismiss: order.cancel) {
-                                ServiceItemView(edit: false, optionList: [], itemHeader: serviceItem, order: order, isShown: $showingDetail, locationId: 18)
+                                ServiceItemView(edit: false, itemHeader: serviceItem, order: order, isShown: $showingDetail, locationId: locationId)
                             }
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -81,14 +81,12 @@ struct ServiceItemListView: View {
                         MenuIssueButton()
                     .background(Color("Primary"))
             }
-            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-
-            .frame(minWidth: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/, maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, minHeight: UIScreen.main.bounds.height-50, maxHeight: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+            .frame(width: UIScreen.main.bounds.width)
+            .frame(minHeight: UIScreen.main.bounds.height)
         }
         else {
             SpinnerWrapper()
                 .frame(width: 35, height: 35, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height/4)
         }
     }
 }
@@ -99,7 +97,7 @@ struct ServiceListViewWrapper: View {
     func testeroo(height: CGFloat, n: Int) {
         print("hi")
     }
-    @State private var serviceItems = [ServiceData.ServiceItem(id: 1, name: "Laundry", imageURL: "https://via.placeholder.com/300", description: "We are a full-service cleaners, offering professional dry cleaning services, shirt laundering, repairs, alterations, family and campus laundry bundles. Just contact one of our two locations today and we’ll handle all of your dry cleaning and laundry needs in a professional and timely manner.")]
+	@State private var serviceItems = [ServiceData.ServiceItem(id: 1, name: "Laundry", imageURL: "https://via.placeholder.com/300", description: "We are a full-service cleaners, offering professional dry cleaning services, shirt laundering, repairs, alterations, family and campus laundry bundles. Just contact one of our two locations today and we’ll handle all of your dry cleaning and laundry needs in a professional and timely manner.", price: 0.0)]
     @State var isShown = true
     var body: some View{
         Group {

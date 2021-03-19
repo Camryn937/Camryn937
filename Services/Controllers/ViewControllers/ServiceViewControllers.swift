@@ -36,8 +36,6 @@ import SwiftUI
 class ServiceViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     var contentHeight: CGFloat = 0
     var lastPosition: CGFloat = 0
-    let cellPadding: CGFloat = 1
-    
     
     weak var delegate: BottomViewControllerScrollDelegate?
 
@@ -66,10 +64,10 @@ class ServiceViewController: UIViewController, UICollectionViewDataSource, UICol
     }()
     lazy var layout: UICollectionViewFlowLayout = {
         let cv = UICollectionViewFlowLayout()
-        cv.minimumInteritemSpacing = cellPadding
-        cv.minimumLineSpacing = cellPadding
+        cv.minimumInteritemSpacing = 0
+        cv.minimumLineSpacing = 0
         cv.scrollDirection = .vertical
-        cv.sectionInset = UIEdgeInsets(top: cellPadding, left: 0, bottom: cellPadding, right: 0)
+        cv.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         return cv
     }()
     lazy var collectionView: UICollectionView = {
@@ -87,22 +85,30 @@ class ServiceViewController: UIViewController, UICollectionViewDataSource, UICol
 
     override func viewWillAppear(_ animated: Bool) {
         //Syncs all the sibling VC to match the container height or position
-                
-        if containerHeight <= 0 {
+        
+        print("\(containerHeight)-------")
+        
+        if containerHeight <= -50 {
             collectionView.contentOffset.y = containerHeight
+            collectionView.setContentOffset(CGPoint(x: 0, y: containerHeight), animated: false)
+
         }
-        else if containerHeight >= 0 && lastPosition <= 0 {
-            collectionView.contentOffset.y = 0
+        else if containerHeight >= -50 && lastPosition <= -50 {
+            collectionView.contentOffset.y = -50
+            collectionView.setContentOffset(CGPoint(x: 0, y: -50), animated: false)
+
         }
-        else if lastPosition >= 0 || lastPosition != containerHeight {
+        else if lastPosition >= -50 || lastPosition != containerHeight {
             collectionView.contentOffset.y = lastPosition
+            collectionView.setContentOffset(CGPoint(x: 0, y: lastPosition), animated: false)
+
         }
         
     }
     
     override func viewDidAppear(_ animated: Bool) {
         if contentHeight == 0 {
-            collectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+            collectionView.setContentOffset(CGPoint(x: 0, y: -50), animated: true)
         }
         containerHeight = collectionView.contentOffset.y
     }
@@ -169,13 +175,14 @@ class ServiceViewController: UIViewController, UICollectionViewDataSource, UICol
         }
         
         containerHeight = scrollView.contentOffset.y
+        
+        print(containerHeight)
     }
 }
 
 
 struct UIServiceView: UIViewControllerRepresentable {
     @ObservedObject var order: Order
-    @ObservedObject var user: AuthUser
     let serviceItems: [ServiceData.ServiceItem]
     @State var loaded = false
 

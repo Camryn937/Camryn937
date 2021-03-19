@@ -33,7 +33,7 @@ import SwiftUI
 
 
 struct AllReviews: View {
-    @State var reviews: ReviewList?
+	@State var reviews = [ReviewObject.Review]()
     @State var loaded = false
     @State var allReviews = false
     let id = 18
@@ -50,15 +50,15 @@ struct AllReviews: View {
                     .pickerStyle(SegmentedPickerStyle())
                     
                     VStack {
-                        ForEach(0..<reviews!.reviews.count){ index in
+						ForEach(reviews, id: \.self){ review in
                             NavigationLink(destination: DetailReview()) {
                                 if allReviews {
-                                    if reviews!.reviews[index].service == id {
-                                        Reviews(review: reviews!.reviews[index])
+									if review.id == id {
+										Reviews(review: review)
                                     }
                                 }
                                 else {
-                                    Reviews(review: reviews!.reviews[index])
+									Reviews(review: review)
                                 }
                             }
                         }
@@ -75,16 +75,14 @@ struct AllReviews: View {
 
 extension AllReviews {
     func loadData() {
-        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/\(id)/allreviews/", for: ReviewList.self, using: .get) { data in
+		NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/\(id)/allreviews/", for: [ReviewObject.Review].self, using: .get) { data in
             switch data {
             case .success(let data):
                 reviews = data
                 loaded = true
-                return loaded
                 
             default:
                 print("failure xx")
-                return false
             }
         }
     }
@@ -98,7 +96,7 @@ struct AllReviews_Previews: PreviewProvider {
 
 
 struct Reviews: View {
-    let review: Review
+	let review: ReviewObject.Review
     
     var body: some View {
         VStack {

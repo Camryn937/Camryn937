@@ -85,7 +85,7 @@ final class NetworkController: ObservableObject {
         return Session(configuration: configuration, interceptor: interceptor, cachedResponseHandler: responseCacher, eventMonitors: [networkLogger])
     }()
     
-    func loadData<T>(from: String, for: T.Type, using: HTTPMethod, parameters: Parameters = ["data":""], encoding: ParameterEncoding! = URLEncoding.default, completion: @escaping (Result<T, Error>) -> Bool) where T: Codable {
+    func loadData<T>(from: String, for: T.Type, using: HTTPMethod, parameters: Parameters = ["data":""], encoding: ParameterEncoding! = URLEncoding.default, completion: @escaping (Result<T, Error>) -> ()) where T: Codable {
         
         CacheController.shared.clearCache()
         
@@ -107,7 +107,7 @@ final class NetworkController: ObservableObject {
                                 print("stat-\(status)")
                                 completion(.success(data.data))
                             case 401:
-                                print("failed>>>>>>>>>>>>>>>>>XX")
+                                print("failed>>>>>>>>>>>>>>>>>XX401")
                             case 500:
                                 print(status)
                             default:
@@ -130,9 +130,27 @@ final class NetworkController: ObservableObject {
             apiRequest
                 .resume()
                 .validate(contentType: ["application/json"])
-                .responseJSON { response in
-                    print(response)
-                }
+                .responseDecodable(of: ApiModel<T>.self, completionHandler: { response in
+                    switch response.result {
+                    case .success(let data):
+                        if let status = response.response?.statusCode {
+                            switch status {
+                            case 200..<300:
+                                print("stat-\(status)--------------")
+                                completion(.success(data.data))
+                            case 401:
+                                print(status)
+                            case 500:
+                                print(status)
+                            default:
+                                print(status)
+                            }
+                        }
+                        
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                })
         }
     }
     

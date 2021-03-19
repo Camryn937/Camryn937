@@ -41,3 +41,7 @@ struct ApiModel<T: Codable>: Codable {
     //        let version: Int
     //    }
 }
+
+struct ApiRespose: Codable {
+    let message: String
+}

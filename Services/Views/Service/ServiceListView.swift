@@ -30,8 +30,7 @@ import PartialSheet
 //Home view
 struct ServiceListView: View {
     @ObservedObject var order = Order()
-    @ObservedObject var user = AuthUser()
-    @State var services: ServiceList?
+    @State var services = [Service]()
     @State var loaded = false
     
     var body: some View {
@@ -44,11 +43,14 @@ struct ServiceListView: View {
         else {
             NavigationView {
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack {
-                        ServicePromoView()
-                        FeaturedServiceView(order: order, user: user, services: services!.services)
-                        Seperator()
-                        AllServiceListView(order: order, user: user, services: services!.services)
+                    HStack {
+                        VStack() {
+                            
+                            ServicePromoView()
+                            FeaturedServiceView(order: order, services: services)
+                            Seperator()
+                            AllServiceListView(order: order, services: services)
+                        }
                     }
                 }
                 .navigationBarTitle("Services", displayMode: .inline)
@@ -61,48 +63,30 @@ struct ServiceListView: View {
                                                     .foregroundColor(Color.black)
                                             }
                                         })
-                .navigationViewStyle(StackNavigationViewStyle())
+//                .navigationViewStyle(StackNavigationViewStyle())
             }
-            .background(Color("Primary"))
-            .navigationViewStyle(StackNavigationViewStyle())
+//            .background(Color("Primary"))
+//            .navigationViewStyle(StackNavigationViewStyle())
         }
     }
 }
 struct ServiceListView_Previews: PreviewProvider {
     static var previews: some View {
-        ServiceListView()
-    }
-}
-
-struct UIServiceListView: UIViewControllerRepresentable {
-    @ObservedObject var order = Order()
-    @ObservedObject var user = AuthUser()
-    @State var services: ServiceList
-    
-    func makeUIViewController(context: Context) -> ServiceViewController {
-        let vc = ServiceViewController()
-        if services.services.count == 0 { vc.hc.rootView = AnyView(LoadingView(size: 80)) }
-        else { vc.hc.rootView = AnyView(ServiceListView(order: order, user: user, services: services)) }
-        return vc
-    }
-    func updateUIViewController(_ vc: ServiceViewController, context: Context) {
-        vc.hc.rootView = AnyView(ServiceListView(order: order, user: user, services: services))
+        ServiceListView(order: Order(), services: [], loaded: false)
     }
 }
 
 //MARK:- REQUEST
 extension ServiceListView {
     func loadData() {
-        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/", for: ServiceList.self, using: .get) { data in
+        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/", for: [Service].self, using: .get) { data in
             switch data {
-            case .success(let data):
-                services = data
-                loaded = true
-                return loaded
-                
-            default:
-                print("failure xx")
-                return false
+                case .success(let data):
+                    services = data
+                    loaded = true
+                    
+                default:
+                    print("failure xx")
             }
         }
     }
@@ -111,17 +95,13 @@ extension ServiceListView {
 //Supporting Services View
 struct AllServiceListView: View {
     @ObservedObject var order: Order
-    @ObservedObject var user: AuthUser
     @State var services: [Service]
     
     var body: some View {
-        VStack(spacing: 0.0) {
-            Group {
+        VStack() {
                 Text("All Services")
                     .font(.system(size: 22.0, weight: .medium, design: .rounded))
-            }
-            .padding([.top, .leading, .trailing])
-            .frame(maxWidth: .infinity, alignment: .leading)
+//            .padding([.top, .leading, .trailing])
             ForEach(services, id: \.self) { service in
                 //Navigate to the nearest location in the index
                 NavigationLink(destination: ServiceView(id: service.location?[0].id ?? 0)) {
@@ -129,49 +109,49 @@ struct AllServiceListView: View {
                         Group {
                             Image("placeholder-image")
                                 .resizable()
-                                .padding(.horizontal)
                                 .background(Color.blue)
                                 .cornerRadius(6)
                         }
-                        .padding(.horizontal)
-                        HStack(spacing: 2.0) {
-                            VStack(alignment: .leading) {
-                                //                                            Text("Opens Sun at 10:00 AM")
-                                //                                                .font(.system(size: 18.0, weight: .semibold, design: .rounded))
-                                //                                                .foregroundColor(.blue)
+                        HStack {
+                            VStack {
                                 Text(service.name)
                                     .font(.system(size: 20.0, weight: .semibold, design: .rounded))
                                     .foregroundColor(Color("Text"))
                                 Text("")
                                     .font(.system(size: 14.0, weight: .medium, design: .rounded))
                                     .foregroundColor(Color("Default-Text"))
-                                    .padding(.bottom, 7.0)
+//                                    .padding(.bottom, 7.0)
                             }
                             Spacer()
                             Text("5")
                                 .font(.system(size: 16.0, weight: .medium, design: .rounded))
-                                .padding([.top, .trailing], 1.0)
+//                                .padding([.top, .trailing], 1.0)
+                                .padding(.bottom, 7.0)
+
                             Image(systemName: "star.fill")
                                 .resizable()
-                                .frame(width: 16, height: 16, alignment: .center)
+                                .frame(width: 18, height: 18, alignment: .center)
                                 .foregroundColor(Color("Star"))
+                                .padding(.bottom, 7.0)
                         }
-                        .padding([.leading, .trailing])
+//                        .padding([.leading, .trailing])
                     }
-                    .padding(.vertical)
+//                    .padding(.vertical)
                     .frame(height: 280)
-                    .overlay(
-                        Rectangle()
-                            .foregroundColor(.white)
-                            .opacity(0.0)
-                    )
-                    Divider()
+                    //                    .overlay(
+                    //                        Rectangle()
+                    //                            .foregroundColor(.white)
+                    //                            .opacity(0.0)
+                    //                            .frame(minWidth: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/, maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                    //                    )
+//                    Divider()
                 }
-                .buttonStyle(PlainButtonStyle())
+//                .buttonStyle(PlainButtonStyle())
                 
                 Divider()
             }
         }
+        .padding(.horizontal)
     }
 }
 

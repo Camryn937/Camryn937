@@ -31,23 +31,20 @@ struct AnimationCircleStrokeSpin: View {
     let size: CGFloat
     let style = StrokeStyle(lineWidth: 3, lineCap: .round)
     @State var animate = false
-    let color1 = Color.gray.opacity(0.7)
+    let color1 = Color.gray.opacity(0.65)
     let color2 = Color.gray
     var body: some View {
-        ZStack {
-            Circle()
-                .trim(from: 0.0, to: 0.7)
-                .stroke(
-                    AngularGradient(gradient: .init(colors: [color1, color2]), center: .center),
-                    style: style)
-                .rotationEffect(Angle(degrees: animate ? 360 : 0))
-                .animation(Animation.linear(duration: 0.7).repeatForever(autoreverses: false))
-                .zIndex(5.0)
+        VStack {
+                Circle()
+                    .trim(from: 0.0, to: 0.7)
+                    .stroke(
+                        AngularGradient(gradient: .init(colors: [color1, color2]), center: .center),
+                        style: style)
+                    .rotationEffect(Angle(degrees: animate ? 360 : 0))
+                    .animation(Animation.linear(duration: 0.7).repeatForever(autoreverses: false))
+            .frame(width: size, height: size)
+            .onAppear(perform: { animate.toggle() })
         }
-        .frame(width: size, height: size)
-        .onAppear(perform: {
-            animate.toggle()
-        })
     }
 }
 

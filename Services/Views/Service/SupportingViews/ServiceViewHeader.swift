@@ -42,71 +42,54 @@ struct ServiceViewHeader: View {
     
     var body: some View {
         VStack(spacing: 0.0) {
-                Image("default")
-                    .resizable()
-                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height/4)
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(name)
-                            .font(.system(size: 28.0, weight: .semibold, design: .rounded))
-
-                        if isVerified { Image(systemName: "xmark") }
-                    }
-                    .padding(.top)
+            Image("placeholder-image")
+                .resizable()
+                .frame(width: UIScreen.main.bounds.width, height: 220, alignment: .top)
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(name)
+                        .font(.system(size: 28.0, weight: .semibold, design: .rounded))
+                    
+                    if isVerified { Image(systemName: "xmark") }
+                }
+                .padding(.vertical, 5.0)
+                
+                Group {
                     Text("2000+ Ratings")
                         .font(.system(size: 12.0, weight: .medium, design: .rounded))
                         .foregroundColor(Color.gray)
-                    HStack {
-                        Picker(selection: $transport, label: Text("Subscription")) {
-                            if hasDelivery && hasDropoff {
-                                Text("Delivery").tag(false)
-                                Text("Drop off").tag(true)
-                            }
-                            else if hasDelivery { Text("Delivery").tag(false) }
-                            else { Text("Drop off").tag(true) }
-                        }.pickerStyle(SegmentedPickerStyle())
-                    }.padding(.vertical)
                     
-                    HStack {
-                        Group {
-                            if !isSubscribable {
-                                Button(action: {
-                                    partialSheet.showPartialSheet({
-                                        print("dismissed")
-                                    }) { Text("Partial SheetView!")
-                                        .frame(height: UIScreen.main.bounds.height/2, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                                    }
-                                }, label: { ServiceHeaderButton(label: "Subscribe") })
-                            }
-    //                        if hasQuote {
-    //                            Button(action: {
-    //                                withAnimation{
-    //                                    viewRouter.popUp.toggle()
-    //                                    viewRouter.modalView = 2 }
-    //                            }) { ServiceHeaderButton(label: "Request Quote") }
-    //                        }
-                            if canMessage {
-                                NavigationLink(destination: Text("hello")) { ServiceHeaderButton(label: "Send Message") }
+                    Text("\(UIScreen.main.bounds.height)")
+                        .font(.system(size: 12.0, weight: .medium, design: .rounded))
+                        .foregroundColor(Color.gray)
+                }
+                .padding(.bottom, 1.0)
+                
+                HStack {
+                    Group {
+                        if !isSubscribable {
+                            Button(action: {
+                                partialSheet.showPartialSheet({
+                                    print("dismissed")
+                                }) { Text("Partial SheetView!")
+                                    .frame(height: 50, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                                }
+                            }, label: { ServiceHeaderButton(label: "Subscribe") })
+                        }
+                        if canMessage {
+                            NavigationLink(destination: Text("hello")) {
+                                ServiceHeaderButton(label: "Send Message")
+                                .padding(.top, 3.0)
                             }
                         }
                     }
                 }
-                .padding(.horizontal)
-//                VStack(alignment: .leading) {
-//                    Text("Hours")
-//                        .font(.system(size: 16.0, weight: .semibold, design: .rounded))
-//                        .foregroundColor(Color("Text"))
-//                        .padding(.top)
-//                    Text("9:00 AM - 10:00 PM")
-//                        .font(.system(size: 14.0, weight: .medium, design: .rounded))
-//
-//                        .foregroundColor(Color("Text"))
-//                        .padding(.vertical, 3.0)
-//                }
-            ServiceSectionPicker(selected: $selected)
-                .padding(.top)
             }
-        .frame(width: UIScreen.main.bounds.width, height: 400)
+            .padding([.leading, .bottom, .trailing])
+            
+            ServiceSectionPicker(selected: $selected)
+        }
+//        .frame(maxHeight: UIScreen.main.bounds.height, alignment: .bottom)
         .background(Color("Primary"))
     }
 }
@@ -132,7 +115,7 @@ struct ServiceHeaderButton: View {
             .frame(maxWidth: .infinity)
             .foregroundColor(Color("Text"))
             .padding(.all)
-            .frame(height: 30, alignment: .center)
+            .frame(height: 40, alignment: .center)
             .background(Color("Primary"))
             .overlay( RoundedRectangle(cornerRadius: 5).stroke(Color.gray, lineWidth: 0.5))
     }

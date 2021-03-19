@@ -71,7 +71,6 @@ struct ServicePromoView_Previews: PreviewProvider {
 
 struct FeaturedServiceView: View {
     @ObservedObject var order: Order
-    @ObservedObject var user: AuthUser
     @State var services: [Service]
     
     var body: some View {
@@ -85,12 +84,11 @@ struct FeaturedServiceView: View {
                 HStack(spacing: 0.0) {
                     ForEach(services, id: \.self) { service in
                         //Navigate to the nearest location in the index
-                        NavigationLink(destination: ServiceView(id: 18)) {
+						NavigationLink(destination: ServiceView(id: service.id)) {
                             VStack(spacing: 5.0) {
                                 Group {
                                     Image("placeholder-image")
                                         .resizable()
-                                        .padding(.horizontal)
                                         .background(Color.blue)
                                         .cornerRadius(6)
                                 }
@@ -112,12 +110,11 @@ struct FeaturedServiceView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
-                    NavigationLink(destination: AllServiceListView(order: order, user: user, services: services).environmentObject(PartialSheetManager())) {
+                    NavigationLink(destination: AllServiceListView(order: order, services: services).environmentObject(PartialSheetManager())) {
                         VStack(alignment: .center, spacing: 5.0) {
                             Group {
                                 Image("placeholder-image")
                                     .resizable()
-                                    .padding(.horizontal)
                                     .background(Color.blue)
                                     .frame(width: 80, height: 80, alignment: .center)
                                     .cornerRadius(100)
@@ -147,6 +144,6 @@ struct FeaturedServiceView: View {
 
 struct PopularServiceView_Previews: PreviewProvider {
     static var previews: some View {
-        FeaturedServiceView(order: Order(), user: AuthUser(), services: [Service(id: 1, name: "Chick-fil-A®", imageURL: "https://via.placeholder.com/300", location: Optional([Services.Location(id: 18), Services.Location(id: 17), Services.Location(id: 20)])), Service(id: 1, name: "Chick-fil-A®", imageURL: "https://via.placeholder.com/300", location: Optional([Services.Location(id: 18), Services.Location(id: 17), Services.Location(id: 20)])), Service(id: 1, name: "Chick-fil-A®", imageURL: "https://via.placeholder.com/300", location: Optional([Services.Location(id: 18), Services.Location(id: 17), Services.Location(id: 20)]))])
+        FeaturedServiceView(order: Order(), services: [Service(id: 1, name: "Chick-fil-A®", imageURL: "https://via.placeholder.com/300", location: Optional([Services.Location(id: 18), Services.Location(id: 17), Services.Location(id: 20)])), Service(id: 1, name: "Chick-fil-A®", imageURL: "https://via.placeholder.com/300", location: Optional([Services.Location(id: 18), Services.Location(id: 17), Services.Location(id: 20)])), Service(id: 1, name: "Chick-fil-A®", imageURL: "https://via.placeholder.com/300", location: Optional([Services.Location(id: 18), Services.Location(id: 17), Services.Location(id: 20)]))])
     }
 }

@@ -27,67 +27,55 @@ import SwiftUI
 import Alamofire
 
 struct CheckoutView: View {
-    @State private var enableLogging = false
+//    @State private var enableLogging = false
+    let isDelievery: Bool
     
+    @State var address = ["6995 Grenoble drv", "9650 Summit Point drv", "47 Leroy St"]
+    @State var phone = ["123456789", "123456782", "234567893", "2345678904"]
+    @State var options = ["Hand it to me", "Leave it at my door"]
+    
+    @State private var selectedAddressIndex = 0
+    @State private var selectedPhoneIndex = 0
+    @State private var selectedOptionsIndex = 0
+
     @State private var selectedTime = 0
-    @State private var times = ["ASAP", "Scheduled"]
-    
-    var address = ["6995 Grenoble drv", "9650 Summit Point drv", "47 Leroy St"]
-    
-    var dropOff = ["Hand it to me", "Leave it at my door"]
-    
-    @State private var selectedStrength = 0
-    
-    @State private var deliveryOptions = 0
-    
-    
+    @State var isScheduled = true
+
     var body: some View {
         VStack {
-            GeometryReader { geometry in
                 ZStack {
                     List {
                         Section(header: Text("Delivery details")) {
-                            NavigationLink(destination: Text("address")) {
-                                HStack {
-                                    Text("Address")
-                                        .lineLimit(1)
-                                        .frame(width: geometry.size.width/2.5, alignment: .leading)
-                                    Spacer()
-                                    Text("6995 Grenoble Drv")
-                                        .lineLimit(1)
-                                        .frame(width: geometry.size.width/2.5, alignment: .trailing)
+                            Picker(selection: $selectedAddressIndex, label: Text("Address")) {
+                                ForEach(0..<address.count) {
+                                    Text("\(address[$0])")
                                 }
                             }
-                            NavigationLink(destination: Text("address")) {
-                                Text("Phone Number")
-                                    .lineLimit(1)
-                                    .frame(width: geometry.size.width/2.5, alignment: .leading)
-                                Spacer()
-                                Text("(937)-723-0086")
-                                    .lineLimit(1)
-                                    .frame(width: geometry.size.width/2.5, alignment: .trailing)
+
+                            Picker(selection: $selectedPhoneIndex, label: Text("Phone")) {
+                                ForEach(0..<phone.count) {
+                                    Text("\(phone[$0])")
+                                }
                             }
                             
-                            Picker(selection: $deliveryOptions, label: Text("Drop off")) {
-                                Text("Drop-off").tag(0)
-                                Text(dropOff[0]).tag(1)
+                            Picker(selection: $selectedOptionsIndex, label: Text("Options")) {
+                                ForEach(0..<options.count) {
+                                    Text("\(options[$0])")
+                                }
                             }
-//                            NavigationLink(destination: TextInputView()) {
-//                                Text("Delivery Message")
-//                            }
                         }
                         
                         Section(header: Text("Delivery Schedule")) {
                             VStack {
-                                Picker(selection: $deliveryOptions, label: Text("Timing")) {
-                                    Text("ASAP").tag(0)
-                                    Text("Scheduled").tag(1)
+                                Picker(selection: $isScheduled, label: Text("")) {
+                                    Text("ASAP").tag(false)
+                                    Text("Scheduled").tag(true)
                                 }
                                 .pickerStyle(SegmentedPickerStyle())
                                 
-                                if deliveryOptions == 1 {
+                                if isScheduled {
                                     withAnimation {
-                                        DatePicker(selection: /*@START_MENU_TOKEN@*/.constant(Date())/*@END_MENU_TOKEN@*/, label: { /*@START_MENU_TOKEN@*/Text("Date")/*@END_MENU_TOKEN@*/ })
+                                        DatePicker(selection: .constant(Date()), label: { Text("Date") })
                                     }
                                 }
                             }
@@ -97,11 +85,9 @@ struct CheckoutView: View {
                             NavigationLink(destination: Text("address")) {
                                 Text("Payment")
                                     .lineLimit(1)
-                                    .frame(width: geometry.size.width/2.5, alignment: .leading)
                                 Spacer()
                                 Text("Apple Pay")
                                     .lineLimit(1)
-                                    .frame(width: geometry.size.width/2.5, alignment: .trailing)
                             }
                         }
                     }
@@ -122,14 +108,13 @@ struct CheckoutView: View {
                     }
                     .padding(.top)
                 }
-            }
         }
     }
 }
 
 struct CheckoutView_Previews: PreviewProvider {
     static var previews: some View {
-        CheckoutView()
+        CheckoutView(isDelievery: true)
     }
 }
 

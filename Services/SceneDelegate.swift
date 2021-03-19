@@ -54,7 +54,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .environment(\.managedObjectContext, context)
             .environmentObject(sheetManager)
         
-//        let contentView = ServiceListView()
+//		let contentView = CartView(order: Order())
 //        let contentView = AccountView()
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {

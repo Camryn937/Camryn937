@@ -48,12 +48,14 @@ struct ServiceView: View {
     
     var body: some View {
         if loaded {
-            UIServiceView(order: Order(), user: AuthUser(), serviceItems: service.first!.serviceItems)
+            UIServiceView(order: Order(), serviceItems: service.first!.serviceItems)
             .background(Color("Primary"))
+//                .edgesIgnoringSafeArea(.top)
         }
         
         else {
             AnimationCircleStrokeSpin(size: 30)
+                .padding(.all)
                 .onAppear(perform: { loadData() })
         }
     }
@@ -84,16 +86,14 @@ struct SampleUIScrollView_Previews: PreviewProvider {
 
 extension ServiceView {
     func loadData() {
-        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/2/", for: ServiceData.self, using: .get) { response in
+        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/1/", for: ServiceData.self, using: .get) { response in
             switch response {
             case .success(let data):
                 service = [data]
                 loaded = true
-                return loaded
                 
             default:
                 print("done xxxxxxx")
-                return false
             }
         }
     }
