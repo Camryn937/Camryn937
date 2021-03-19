@@ -50,7 +50,6 @@ struct ServiceView: View {
         if loaded {
             UIServiceView(order: Order(), serviceItems: service.first!.serviceItems)
             .background(Color("Primary"))
-//                .edgesIgnoringSafeArea(.top)
         }
         
         else {

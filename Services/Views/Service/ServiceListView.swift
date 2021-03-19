@@ -63,7 +63,7 @@ struct ServiceListView: View {
                                                     .foregroundColor(Color.black)
                                             }
                                         })
-//                .navigationViewStyle(StackNavigationViewStyle())
+                .navigationViewStyle(StackNavigationViewStyle())
             }
 //            .background(Color("Primary"))
 //            .navigationViewStyle(StackNavigationViewStyle())
@@ -98,10 +98,10 @@ struct AllServiceListView: View {
     @State var services: [Service]
     
     var body: some View {
-        VStack() {
+        VStack(alignment: .leading) {
                 Text("All Services")
                     .font(.system(size: 22.0, weight: .medium, design: .rounded))
-//            .padding([.top, .leading, .trailing])
+
             ForEach(services, id: \.self) { service in
                 //Navigate to the nearest location in the index
                 NavigationLink(destination: ServiceView(id: service.location?[0].id ?? 0)) {
@@ -112,6 +112,7 @@ struct AllServiceListView: View {
                                 .background(Color.blue)
                                 .cornerRadius(6)
                         }
+                        
                         HStack {
                             VStack {
                                 Text(service.name)
@@ -120,12 +121,12 @@ struct AllServiceListView: View {
                                 Text("")
                                     .font(.system(size: 14.0, weight: .medium, design: .rounded))
                                     .foregroundColor(Color("Default-Text"))
-//                                    .padding(.bottom, 7.0)
                             }
+                            
                             Spacer()
+                            
                             Text("5")
                                 .font(.system(size: 16.0, weight: .medium, design: .rounded))
-//                                .padding([.top, .trailing], 1.0)
                                 .padding(.bottom, 7.0)
 
                             Image(systemName: "star.fill")
@@ -134,19 +135,10 @@ struct AllServiceListView: View {
                                 .foregroundColor(Color("Star"))
                                 .padding(.bottom, 7.0)
                         }
-//                        .padding([.leading, .trailing])
                     }
-//                    .padding(.vertical)
-                    .frame(height: 280)
-                    //                    .overlay(
-                    //                        Rectangle()
-                    //                            .foregroundColor(.white)
-                    //                            .opacity(0.0)
-                    //                            .frame(minWidth: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/, maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                    //                    )
-//                    Divider()
+                    .frame(height: 220)
                 }
-//                .buttonStyle(PlainButtonStyle())
+                .buttonStyle(PlainButtonStyle())
                 
                 Divider()
             }

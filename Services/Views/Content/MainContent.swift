@@ -35,6 +35,7 @@ struct MainContent: View {
                     Text("Two")
                 }
         }
+        .background(Color.white)
     }
 }
 

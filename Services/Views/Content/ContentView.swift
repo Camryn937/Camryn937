@@ -27,40 +27,58 @@ import SwiftUI
 import PartialSheet
 
 struct ContentView: View {
+    @State var isButtonVisible = true
     var body: some View {
-        ZStack(alignment: .bottom) {
-            MainContent()
-            Button(action: {
-                
-            }) {
-                VStack {
-                    HStack {
-                        Text("Cart $25.00")
-                            .foregroundColor(Color.white)
-                            .font(.system(size: 18.0, weight: .semibold, design: .rounded))
-                            .frame(height: 60, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                            .frame(minWidth: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/, maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                            .background(Color.blue)
-                            .cornerRadius(8)
+            ZStack(alignment: .bottom) {
+                MainContent()
+                Button(action: {
+                    self.isButtonVisible.toggle()
+                }) {
+                    VStack(alignment: .center) {
+                        HStack {
+                            Image(systemName: "cart.circle")
+                                .resizable()
+                                .frame(width: 40, height: 40)
+                                .foregroundColor(Color.white)
+                                .padding(.horizontal)
+                            
+                            Spacer()
+                            
+                            Text("Cart $25.00")
+                                .foregroundColor(Color.white)
+                                .font(.system(size: 18.0, weight: .semibold, design: .rounded))
+                                .padding(.horizontal)
+                            
+                            Spacer()
+                            
+                            HStack {
+                                Circle()
+                                    .opacity(0.2)
+                                    .frame(width: 40, height: 40)
+                                    .foregroundColor(Color.black)
+                                    .overlay(
+                                        Text("1")
+                                            .foregroundColor(Color.white)
+                                            .font(.system(size: 20.0, weight: .semibold, design: .rounded))
+                                            .padding(.all)
+                                        )
+                            }
+                            .padding(.trailing)
+                        }
+                        .frame(height: 60, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                        .frame(minWidth: /*@START_MENU_TOKEN@*/0/*@END_MENU_TOKEN@*/, maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
+                    .buttonStyle(PlainButtonStyle())
+                    .position(x: UIScreen.main.bounds.size.width/2, y: UIScreen.main.bounds.size.height - 200)
+                    .animation(.easeInOut, value: isButtonVisible)
                 }
+                .buttonStyle(PlainButtonStyle())
+                .zIndex(10)
             }
-
-//                .onAppear(perform: {
-//                    loadData()
-//                })
-        }
     }
-//    func loadData() {
-//        NetworkController.shared.loadData(from: "http://192.168.1.75:8000/service/", for: [Service].self, using: .get) { data in
-//            switch data {
-//            case .success(let data):
-//            default:
-//                print("failure xx")
-//            }
-//        }
-//    }
 }
 
 struct ContentView_Previews: PreviewProvider {

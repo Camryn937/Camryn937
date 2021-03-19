@@ -398,7 +398,6 @@
 			isa = PBXGroup;
 			children = (
 				FADCB4DA25E7918B00F0616A /* Order */,
-				FADCB4E025E7918B00F0616A /* Popup */,
 				FADCB4E425E7918B00F0616A /* Messages */,
 				FADCB4EE25E7918B00F0616A /* Auth */,
 				FADCB4F225E7918B00F0616A /* Payment */,
@@ -575,8 +574,9 @@
 		FADCB52625E7918B00F0616A /* Supporting Views */ = {
 			isa = PBXGroup;
 			children = (
-				FADCB52725E7918B00F0616A /* CapsuleGridView.swift */,
+				FADCB4E025E7918B00F0616A /* Popup */,
 				FADCB52825E7918B00F0616A /* Buttons */,
+				FADCB52725E7918B00F0616A /* CapsuleGridView.swift */,
 				FADCB52A25E7918B00F0616A /* ActivityLoader.swift */,
 				FADCB52B25E7918B00F0616A /* ImageViews.swift */,
 				FADCB52C25E7918B00F0616A /* TabView.swift */,

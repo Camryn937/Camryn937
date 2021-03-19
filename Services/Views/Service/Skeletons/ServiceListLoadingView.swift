@@ -68,7 +68,7 @@ struct ServiceListLoadingView: View {
 
             RoundedRectangle(cornerRadius: 5)
                 .padding(.horizontal)
-                .frame(maxHeight: 250)
+                .frame(maxHeight: 200)
         }
         .disabled(true)
         .foregroundColor(.gray)
